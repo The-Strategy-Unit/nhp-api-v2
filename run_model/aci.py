@@ -68,7 +68,6 @@ def create_and_start_container(
             workspace_key=config.LOG_ANALYTICS_WORKSPACE_KEY,
             workspace_resource_id=config.LOG_ANALYTICS_WORKSPACE_RESOURCE_ID,
             log_type="ContainerInstanceLogs",
-            metadata=metadata,
         )
     )
 
