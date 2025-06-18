@@ -13,7 +13,7 @@ bp_run_model = func.Blueprint()
 
 
 @bp_run_model.route(route="run_model", auth_level=func.AuthLevel.FUNCTION)
-def main(req: func.HttpRequest) -> func.HttpResponse:
+def run_model(req: func.HttpRequest) -> func.HttpResponse:
     params = req.get_json()
     if "id" in params:
         params.pop("id")
