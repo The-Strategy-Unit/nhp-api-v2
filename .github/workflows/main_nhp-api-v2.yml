@@ -73,12 +73,25 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_8A3AB3EC1FB94646B2862FE1BC2C0393 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AC3CEBB5A2DA499693E8512D1F431F72 }}
 
-      - name: 'Deploy to Azure Functions'
-        uses: Azure/functions-action@v1
-        id: deploy-to-function
-        with:
-          app-name: 'nhp-api-v2'
-          slot-name: 'Production'
-          remote-build: true
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+      # issue currently with this action and flex consumption plans
+      # see https://github.com/Azure/Azure-Functions/issues/2450#issuecomment-2145597626
+      # - name: 'Deploy to Azure Functions'
+      #   uses: Azure/functions-action@v1
+      #   id: deploy-to-function
+      #   with:
+      #     app-name: 'nhp-api-v2'
+      #     slot-name: 'Production'
+      #     remote-build: true
+      #     package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           
+      
+      - name: 'Deploy to Azure Functions'
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az functionapp deployment source config-zip \
+              -g ${{ vars.AZURE_RESOURCE_GROUP }} \
+              -n ${{ vars.AZURE_FUNCTIONAPP_NAME }} \
+              --src release.zip \
+              --build-remote true
