@@ -6,4 +6,5 @@ azure-functions
 azure-identity
 azure-mgmt-containerinstance
 azure-storage-blob
+jsonschema
 python-dotenv

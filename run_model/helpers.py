@@ -5,7 +5,9 @@ import zlib
 from datetime import datetime, timezone
 from typing import Tuple
 
+import requests
 from azure.identity import DefaultAzureCredential
+from jsonschema import validate
 
 from run_model.aci import create_and_start_container
 from run_model.storage import upload_params_to_blob
@@ -32,6 +34,9 @@ def get_metadata(params: dict) -> dict:
 
 
 def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
+    # check that the params are valid according to the schema
+    validate_params(params, app_version)
+
     # the id paramerter used to be submitted, but is now generated here to prevent issues with the
     # containers being created with invalid ids.
     if "id" in params:
@@ -50,6 +55,16 @@ def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
     metadata["id"] = generate_id(params, metadata)
 
     return params, metadata
+
+
+def validate_params(params: dict, app_version: str) -> None:
+    uri = f"https://the-strategy-unit.github.io/nhp_model/{app_version}/params-schema.json"
+    req = requests.get(uri)
+    if req.status_code != 200:
+        logging.warning("Unable to validate schema for app_version %s", app_version)
+        return
+    schema = req.json()
+    validate(params, schema)
 
 
 def create_model_run(
