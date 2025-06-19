@@ -9,11 +9,11 @@ from status.model_run_status import get_model_run_status
 bp_status = func.Blueprint()
 
 
-@bp_status.route(route="model_run_status", auth_level=func.AuthLevel.FUNCTION)
+@bp_status.route(route="model_run_status/{id}", auth_level=func.AuthLevel.FUNCTION)
 def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("getting status for model run")
-    container_group_name = req.route_params.get("id")
 
+    container_group_name = req.route_params.get("id")
     status = get_model_run_status(container_group_name)
 
     return func.HttpResponse(json.dumps(status), mimetype="application/json")
@@ -26,6 +26,7 @@ def list_current_model_runs(
     logging.info("listing all active model runs")
 
     current_model_runs = get_current_model_runs()
+
     return func.HttpResponse(
         json.dumps(current_model_runs), mimetype="application/json"
     )
