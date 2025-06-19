@@ -36,7 +36,7 @@ def create_and_start_container(
     )
 
     # before v4.0, the containers are started using /opt/docker_run.py
-    if tag == "dev" or tag[:2] >= "v4":
+    if tag == "dev" or tag >= "v4":
         command = "/app/.venv/bin/python -m nhp.docker"
     else:
         command = "/opt/docker_run.py"

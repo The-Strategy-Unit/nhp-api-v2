@@ -1,7 +1,3 @@
-import json
-import logging
-
-import azure.functions as func
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.containerinstance import ContainerInstanceManagementClient
 
@@ -9,10 +5,10 @@ import config
 from status.helpers import get_container_group_instance_state
 
 
-def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("getting status for model run")
-    container_group_name = req.route_params.get("id")
-
+def get_model_run_status(container_group_name: str) -> dict:
+    """
+    Get the status of a model run by its container group name.
+    """
     client = ContainerInstanceManagementClient(
         DefaultAzureCredential(), config.SUBSCRIPTION_ID
     )
@@ -22,6 +18,4 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
         container_group_name, client, resource_group
     )
 
-    return func.HttpResponse(
-        json.dumps(container.as_dict()), mimetype="application/json"
-    )
+    return container
