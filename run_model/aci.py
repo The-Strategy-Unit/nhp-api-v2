@@ -37,9 +37,9 @@ def create_and_start_container(
 
     # before v4.0, the containers are started using /opt/docker_run.py
     if tag == "dev" or tag >= "v4":
-        command = "/app/.venv/bin/python -m nhp.docker"
+        command = ["/app/.venv/bin/python", "-m", "nhp.docker"]
     else:
-        command = "/opt/docker_run.py"
+        command = ["/opt/docker_run.py"]
 
     container = Container(
         name=model_id,
@@ -49,7 +49,7 @@ def create_and_start_container(
             EnvironmentVariable(name="STORAGE_ACCOUNT", value=config.STORAGE_ACCOUNT)
         ],
         command=[
-            command,
+            *command,
             f"{model_id}.json",
             *(["--save-full-model-results"] if save_full_model_results else []),
         ],
