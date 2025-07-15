@@ -14,9 +14,21 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("getting status for model run")
 
     container_group_name = req.route_params.get("id")
-    status = get_model_run_status(container_group_name)
+    try:
+        status = get_model_run_status(container_group_name)
 
-    return func.HttpResponse(json.dumps(status), mimetype="application/json")
+        if status:
+            status_code = 200
+        else:
+            status_code = 404
+            status = {"error": f"no model run found for f{container_group_name}"}
+    except Exception as e:
+        status_code = 500
+        status = {"error": str(e)}
+
+    return func.HttpResponse(
+        json.dumps(status), mimetype="application/json", status_code=status_code
+    )
 
 
 @bp_status.route(route="list_current_model_runs", auth_level=func.AuthLevel.FUNCTION)
