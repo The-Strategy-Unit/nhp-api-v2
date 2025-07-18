@@ -1,4 +1,5 @@
 import logging
+import re
 
 from azure.identity import DefaultAzureCredential
 from azure.mgmt.containerinstance import ContainerInstanceManagementClient
@@ -36,10 +37,13 @@ def create_and_start_container(
     )
 
     # before v4.0, the containers are started using /opt/docker_run.py
-    if tag == "dev" or tag >= "v4":
-        command = ["/app/.venv/bin/python", "-m", "nhp.docker"]
-    else:
-        command = ["/opt/docker_run.py"]
+    match = re.match(r"^v(\d+)\.", tag)
+    before_v4 = match and int(match.group(1)) < 4
+    command = (
+        ["/opt/docker_run.py"]
+        if before_v4
+        else ["/app/.venv/bin/python", "-m", "nhp.docker"]
+    )
 
     container = Container(
         name=model_id,
