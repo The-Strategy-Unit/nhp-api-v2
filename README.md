@@ -1,6 +1,6 @@
 # NHP Model Runner
 
-A serverless Azure Function App for running and monitoring National Health Planning (NHP) simulation models in Azure Container Instances.
+A serverless Azure Function App for running and monitoring New Hospital Programme (NHP) models in Azure Container Instances.
 
 ## Overview
 
