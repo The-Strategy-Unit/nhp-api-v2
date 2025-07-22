@@ -4,7 +4,7 @@ A serverless Azure Function App for running and monitoring New Hospital Programm
 
 ## Overview
 
-This application provides an API-driven service to execute healthcare planning simulation models in a scalable, cloud-native environment. The NHP models help healthcare planners analyse patient flows, resource utilisation, and capacity requirements across inpatient, outpatient, and A&E (Accident & Emergency) services.
+This application provides an API-driven service to run the [NHP model](https://github.com/The-Strategy-Unit/nhp_model) in a scalable, cloud-native environment.
 
 ### Why This Approach?
 
