@@ -170,16 +170,6 @@ Content-Type: application/json
   "scenario": "capacity-increase-10pct",
   "model_runs": 100,
   "random_seed": 42,
-  "parameters": {
-    "length_of_stay": {
-      "mean": 5.2,
-      "std_dev": 1.3
-    },
-    "arrival_rate": {
-      "weekday": 45,
-      "weekend": 65
-    }
-  }
 }
 ```
 
