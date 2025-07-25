@@ -44,7 +44,7 @@ def _get_aci_status(container_group_name: str, cred: DefaultAzureCredential) -> 
     )
 
 
-def get_model_run_status(container_group_name: str) -> dict:
+def get_model_run_status(container_group_name: str) -> dict | None:
     """
     Get the status of a model run by its container group name.
     """
