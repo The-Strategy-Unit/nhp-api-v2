@@ -50,11 +50,11 @@ def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
     params["app_version"] = metadata["app_version"] = app_version
 
     # convert params to a JSON string
-    params = json.dumps(params)
+    params_str = json.dumps(params)
     # generate the id based on the params and metadata
-    metadata["id"] = generate_id(params, metadata)
+    metadata["id"] = generate_id(params_str, metadata)
 
-    return params, metadata
+    return params_str, metadata
 
 
 def validate_params(params: dict, app_version: str) -> None:
