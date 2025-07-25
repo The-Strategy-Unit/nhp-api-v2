@@ -47,7 +47,7 @@ def create_and_start_container(
 
     container = Container(
         name=model_id,
-        image=f"{config.CONTAINER_IMAGE_GHCR}:{tag}",
+        image=f"{config.CONTAINER_IMAGE}:{tag}",
         resources=container_resource_requirements,
         environment_variables=[
             EnvironmentVariable(name="STORAGE_ACCOUNT", value=config.STORAGE_ACCOUNT)
