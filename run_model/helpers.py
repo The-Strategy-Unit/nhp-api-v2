@@ -3,7 +3,6 @@ import logging
 import re
 import zlib
 from datetime import datetime, timezone
-from typing import Tuple
 
 import requests
 from azure.identity import DefaultAzureCredential
@@ -33,7 +32,7 @@ def get_metadata(params: dict) -> dict:
     return metadata
 
 
-def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
+def prepare_params(params: dict, app_version: str) -> tuple[str, dict]:
     # check that the params are valid according to the schema
     validate_params(params, app_version)
 
