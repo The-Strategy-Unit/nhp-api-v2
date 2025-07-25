@@ -8,11 +8,12 @@ def get_container_group_instance_state(
     client: ContainerInstanceManagementClient,
     resource_group: str,
 ) -> dict:
-    container = (
-        client.container_groups.get(resource_group, container_group_name)
-        .containers[0]
-        .instance_view.current_state
-    )
+    container = client.container_groups.get(
+        resource_group, container_group_name
+    ).containers[0]
+
+    if container.instance_view is None:
+        return {}
 
     if (
         config.AUTO_DELETE_COMPLETED_CONTAINERS
