@@ -19,6 +19,25 @@ from azure.mgmt.containerinstance.models import (
 import config
 
 
+def _build_container_command(
+    model_id: str, tag: str, save_full_model_results: bool
+) -> list[str]:
+    # before v4.0, the containers are started using /opt/docker_run.py
+    match = re.match(r"^v(\d+)\.", tag)
+    before_v4 = match and int(match.group(1)) < 4
+    command = (
+        ["/opt/docker_run.py"]
+        if before_v4
+        else ["/app/.venv/bin/python", "-m", "nhp.docker"]
+    )
+
+    command.append(f"{model_id}.json")
+    if save_full_model_results:
+        command.append("--save-full-model-results")
+
+    return command
+
+
 def create_and_start_container(
     metadata: dict,
     credential: DefaultAzureCredential,
@@ -36,14 +55,7 @@ def create_and_start_container(
         requests=container_resource_requests
     )
 
-    # before v4.0, the containers are started using /opt/docker_run.py
-    match = re.match(r"^v(\d+)\.", tag)
-    before_v4 = match and int(match.group(1)) < 4
-    command = (
-        ["/opt/docker_run.py"]
-        if before_v4
-        else ["/app/.venv/bin/python", "-m", "nhp.docker"]
-    )
+    command = _build_container_command(model_id, tag, save_full_model_results)
 
     container = Container(
         name=model_id,
@@ -52,11 +64,7 @@ def create_and_start_container(
         environment_variables=[
             EnvironmentVariable(name="STORAGE_ACCOUNT", value=config.STORAGE_ACCOUNT)
         ],
-        command=[
-            *command,
-            f"{model_id}.json",
-            *(["--save-full-model-results"] if save_full_model_results else []),
-        ],
+        command=command,
     )
 
     subnet = ContainerGroupSubnetId(id=config.SUBNET_ID, name=config.SUBNET_NAME)
@@ -89,4 +97,5 @@ def create_and_start_container(
     client.container_groups.begin_create_or_update(
         config.RESOURCE_GROUP, f"{model_id}", cgroup
     )
-    logging.info("container created with command: %s", " ".join(container.command))
+    logging.info("container created with command: %s", " ".join(command))
+    logging.info("container created with command: %s", " ".join(command))
