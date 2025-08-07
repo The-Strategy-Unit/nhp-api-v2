@@ -1,8 +1,7 @@
 import json
 
 import azure.functions as func
-
-from run_model.helpers import create_model_run
+from nhp.aci.run_model import create_model_run
 
 bp_run_model = func.Blueprint()
 
