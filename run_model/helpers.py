@@ -3,7 +3,6 @@ import logging
 import re
 import zlib
 from datetime import datetime, timezone
-from typing import Tuple
 
 import requests
 from azure.identity import DefaultAzureCredential
@@ -33,7 +32,7 @@ def get_metadata(params: dict) -> dict:
     return metadata
 
 
-def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
+def prepare_params(params: dict, app_version: str) -> tuple[str, dict]:
     # check that the params are valid according to the schema
     validate_params(params, app_version)
 
@@ -50,11 +49,11 @@ def prepare_params(params: dict, app_version: str) -> Tuple[str, dict]:
     params["app_version"] = metadata["app_version"] = app_version
 
     # convert params to a JSON string
-    params = json.dumps(params)
+    params_str = json.dumps(params)
     # generate the id based on the params and metadata
-    metadata["id"] = generate_id(params, metadata)
+    metadata["id"] = generate_id(params_str, metadata)
 
-    return params, metadata
+    return params_str, metadata
 
 
 def validate_params(params: dict, app_version: str) -> None:
