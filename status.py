@@ -2,9 +2,7 @@ import json
 import logging
 
 import azure.functions as func
-
-from status.list_current_model_runs import get_current_model_runs
-from status.model_run_status import get_model_run_status
+from nhp.aci.status import get_current_model_runs, get_model_run_status
 
 bp_status = func.Blueprint()
 
