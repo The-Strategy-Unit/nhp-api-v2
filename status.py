@@ -13,19 +13,19 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
 
     container_group_name = req.route_params.get("id")
     try:
-        status = get_model_run_status(container_group_name)
+        res = get_model_run_status(container_group_name)
 
-        if status:
+        if res:
             status_code = 200
         else:
             status_code = 404
-            status = {"error": f"no model run found for f{container_group_name}"}
+            res = {"error": f"no model run found for f{container_group_name}"}
     except Exception as e:
+        res = {"error": {"type": type(e).__name__, "text": str(e)}}
         status_code = 500
-        status = {"error": str(e)}
 
     return func.HttpResponse(
-        json.dumps(status), mimetype="application/json", status_code=status_code
+        json.dumps(res), mimetype="application/json", status_code=status_code
     )
 
 
@@ -35,8 +35,13 @@ def list_current_model_runs(
 ) -> func.HttpResponse:  # pylint: disable=unused-argument
     logging.info("listing all active model runs")
 
-    current_model_runs = get_current_model_runs()
+    try:
+        res = get_current_model_runs()
+        status_code = 200
+    except Exception as e:
+        res = {"error": {"type": type(e).__name__, "text": str(e)}}
+        status_code = 500
 
     return func.HttpResponse(
-        json.dumps(current_model_runs), mimetype="application/json"
+        json.dumps(res), mimetype="application/json", status_code=status_code
     )

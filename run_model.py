@@ -15,7 +15,12 @@ def run_model(req: func.HttpRequest) -> func.HttpResponse:
         req.params.get("save_full_model_results", "").lower() == "true"
     )
     # submit model run
-    metadata = create_model_run(params, app_version, save_full_model_results)
-
-    # return response
-    return func.HttpResponse(json.dumps(metadata), mimetype="application/json")
+    try:
+        res = create_model_run(params, app_version, save_full_model_results)
+        status_code = 200
+    except Exception as e:
+        res = {"error": {"type": type(e).__name__, "text": str(e)}}
+        status_code = 500
+    return func.HttpResponse(
+        json.dumps(res), mimetype="application/json", status_code=status_code
+    )
