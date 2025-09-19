@@ -5,6 +5,7 @@ import azure.functions as func
 from nhp.aci.status import get_current_model_runs, get_model_run_status
 
 bp_status = func.Blueprint()
+logger = logging.getLogger(__name__)
 
 
 @bp_status.route(route="model_run_status/{id}", auth_level=func.AuthLevel.FUNCTION)
@@ -20,8 +21,10 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
         else:
             status_code = 404
             res = {"error": f"no model run found for f{container_group_name}"}
+            logger.error(res["error"])
     except Exception as e:
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
+        logger.error(res["error"])
         status_code = 500
 
     return func.HttpResponse(
@@ -40,6 +43,7 @@ def list_current_model_runs(
         status_code = 200
     except Exception as e:
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
+        logger.error(res["error"])
         status_code = 500
 
     return func.HttpResponse(
