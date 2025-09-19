@@ -8,8 +8,7 @@
       }
     },
     "logLevel": {
-      "default": "Information",
-      "azure": "Error"
+      "default": "Information"
     }
   },
   "extensionBundle": {
