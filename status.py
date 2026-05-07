@@ -8,19 +8,22 @@ bp_status = func.Blueprint()
 logger = logging.getLogger(__name__)
 
 
-@bp_status.route(route="model_run_status/{id}", auth_level=func.AuthLevel.FUNCTION)
+@bp_status.route(
+    route="model_run_status/{dataset}/{id}", auth_level=func.AuthLevel.FUNCTION
+)
 def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
     logging.info("getting status for model run")
 
-    container_group_name = req.route_params.get("id")
+    dataset = req.route_params.get("dataset")
+    model_run_id = req.route_params.get("id")
     try:
-        res = get_model_run_status(container_group_name)
+        res = get_model_run_status(dataset, model_run_id)
 
         if res:
             status_code = 200
         else:
             status_code = 404
-            res = {"error": f"no model run found for f{container_group_name}"}
+            res = {"error": f"no model run found for {dataset}/{model_run_id}"}
             logger.error(res["error"])
     except Exception as e:
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
