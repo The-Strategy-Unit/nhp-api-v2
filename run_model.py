@@ -17,9 +17,12 @@ def run_model(req: func.HttpRequest) -> func.HttpResponse:
     save_full_model_results = (
         req.params.get("save_full_model_results", "").lower() == "true"
     )
+    results_viewable = req.params.get("results_viewable", "").lower() == "true"
     # submit model run
     try:
-        res = create_model_run(params, app_version, save_full_model_results)
+        res = create_model_run(
+            params, app_version, save_full_model_results, results_viewable
+        )
         status_code = 200
     except Exception as e:
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
