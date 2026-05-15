@@ -77,7 +77,7 @@ jobs:
         uses: Azure/functions-action@v1
         id: deploy-to-function
         with:
-          app-name: "nhp-api-v2"
+          app-name: "nhp-api-v2-dev"
           slot-name: "Production"
           remote-build: true
           package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
