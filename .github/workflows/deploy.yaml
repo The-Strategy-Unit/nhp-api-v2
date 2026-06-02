@@ -43,4 +43,4 @@ jobs:
 
       - name: Deploy Azure Function
         run: |
-          func azure functionapp publish ${{ vars.AZURE_FUNCTION_APP_NAME }}
+          func azure functionapp publish ${{ vars.AZURE_FUNCTION_APP_NAME }} --python
