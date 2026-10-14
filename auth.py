@@ -1,4 +1,5 @@
 import base64
+import binascii
 import json
 from collections.abc import Callable
 from functools import wraps
@@ -13,9 +14,15 @@ def get_client_principal(req: func.HttpRequest) -> dict:
     if not value:
         raise ValueError("No authenticated client principal")
 
-    decoded = base64.b64decode(value).decode("utf-8")
+    try:
+        decoded = base64.b64decode(value).decode("utf-8")
+    except (ValueError, TypeError, binascii.Error):
+        raise ValueError("Invalid authenticated client principal") from None
 
-    return json.loads(decoded)
+    try:
+        return json.loads(decoded)
+    except json.JSONDecodeError as exc:
+        raise ValueError("Invalid authenticated client principal") from exc
 
 
 def get_roles(req: func.HttpRequest) -> set[str]:
@@ -38,8 +45,11 @@ def require_role(*roles: str) -> Callable:
         def wrapper(
             req: func.HttpRequest, *args: Any, **kwargs: Any
         ) -> func.HttpResponse:
-            if not has_role(req, *roles):
-                return func.HttpResponse("Forbidden", status_code=403)
+            try:
+                if not has_role(req, *roles):
+                    return func.HttpResponse("Forbidden", status_code=403)
+            except (TypeError, ValueError):
+                return func.HttpResponse("Unauthorized", status_code=401)
 
             return handler(req, *args, **kwargs)
 
