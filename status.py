@@ -4,15 +4,16 @@ import logging
 import azure.functions as func
 from nhp.aci.status import get_current_model_runs, get_model_run_status
 
+from auth import require_role
+
 bp_status = func.Blueprint()
 logger = logging.getLogger(__name__)
 
 
-@bp_status.route(
-    route="model_run_status/{dataset}/{id}", auth_level=func.AuthLevel.FUNCTION
-)
+@bp_status.route(route="model_run_status/{dataset}/{id}")
+@require_role("NHP.Model.ViewRuns")
 def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info("getting status for model run")
+    logger.info("getting status for model run")
 
     dataset = req.route_params.get("dataset")
     model_run_id = req.route_params.get("id")
@@ -25,7 +26,7 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
             status_code = 404
             res = {"error": f"no model run found for {dataset}/{model_run_id}"}
             logger.error(res["error"])
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
         logger.error(res["error"])
         status_code = 500
@@ -35,16 +36,17 @@ def model_run_status(req: func.HttpRequest) -> func.HttpResponse:
     )
 
 
-@bp_status.route(route="list_current_model_runs", auth_level=func.AuthLevel.FUNCTION)
+@bp_status.route(route="list_current_model_runs")
+@require_role("NHP.Model.ViewRuns")
 def list_current_model_runs(
     req: func.HttpRequest,
 ) -> func.HttpResponse:  # pylint: disable=unused-argument
-    logging.info("listing all active model runs")
+    logger.info("listing all active model runs")
 
     try:
         res = get_current_model_runs()
         status_code = 200
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
         logger.error(res["error"])
         status_code = 500

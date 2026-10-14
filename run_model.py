@@ -4,12 +4,15 @@ import logging
 import azure.functions as func
 from nhp.aci.run_model import create_model_run
 
+from auth import require_role
+
 bp_run_model = func.Blueprint()
 
 logger = logging.getLogger(__name__)
 
 
-@bp_run_model.route(route="run_model", auth_level=func.AuthLevel.FUNCTION)
+@bp_run_model.route(route="run_model")
+@require_role("NHP.Model.Run")
 def run_model(req: func.HttpRequest) -> func.HttpResponse:
     # parse request
     params = req.get_json()
@@ -24,7 +27,7 @@ def run_model(req: func.HttpRequest) -> func.HttpResponse:
             params, app_version, save_full_model_results, results_viewable
         )
         status_code = 200
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         res = {"error": {"type": type(e).__name__, "text": str(e)}}
         logger.error(str(e))
         status_code = 500
